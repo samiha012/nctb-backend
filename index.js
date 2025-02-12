@@ -92,15 +92,15 @@ app.post('/admin/login', async function (req, res) {
 
 
 app.post('/user/create', async (req, res) => {
-    const { email, pass, branch } = req.body;
-    const existingUser = await user.findOne({ email })
+    const { email, pass } = req.body;
+    const existingUser = await User.findOne({ email })
     if (existingUser) {
-      return res.status(400).json({ success: false, message: "Manager already created using this email" });
+      return res.status(400).json({ success: false, message: "User already created using this email" });
     }
     const hashedPassword = await bcrypt.hash(pass, 10);
     const manager = new user({ email, password: hashedPassword, branch });
     await manager.save();
-    res.status(201).json({ success: true, message: "Manager created successfully" });
+    res.status(201).json({ success: true, message: "User created successfully" });
   });
   
   
@@ -108,9 +108,9 @@ app.post('/user/create', async (req, res) => {
   
   app.post('/user/delete', async (req, res) => {
     const { email } = req.body;
-    const manager = await user.findOneAndDelete({ email });
-    if (!manager) return res.status(404).json({ message: 'Manager not found', success: false });
-    return res.json({ success: true, message: 'Manager deleted successfully' });
+    const manager = await User.findOneAndDelete({ email });
+    if (!manager) return res.status(404).json({ message: 'User not found', success: false });
+    return res.json({ success: true, message: 'User deleted successfully' });
   })
 
 // POST route to add a new document
