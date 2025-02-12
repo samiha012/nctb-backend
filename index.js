@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const bcrypt = require("bcrypt");
 const cors = require("cors");
 
 // Initialize Express
@@ -85,8 +86,8 @@ app.post('/admin/login', async function (req, res) {
     // return res.json({ success: true, message: "Logged in successfully", admin });
   })
 
- app.get('/managers', async function (req, res) {
-  const managers = await user.find()
+ app.get('/users', async function (req, res) {
+  const managers = await User.find()
   res.status(200).json([...managers])
 })
 
@@ -98,7 +99,7 @@ app.post('/user/create', async (req, res) => {
       return res.status(400).json({ success: false, message: "User already created using this email" });
     }
     const hashedPassword = await bcrypt.hash(pass, 10);
-    const manager = new user({ email, password: hashedPassword, branch });
+    const manager = new User({ email, password: hashedPassword });
     await manager.save();
     res.status(201).json({ success: true, message: "User created successfully" });
   });
