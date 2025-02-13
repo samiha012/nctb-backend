@@ -23,10 +23,10 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 const documentSchema = new mongoose.Schema({
     year: {type: String, require: true},
-    grade: { type: String, required: true },
+    className: { type: String, required: true },
     medium: {type: String, required: true},
     version: { type: String, required: true },
-    subject: { type: String, required: true },
+    bookName: { type: String, required: true },
     drivePdfUrl: { type: String, required: false }
 });
 
@@ -46,6 +46,31 @@ const userSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 const User = mongoose.model('User', userSchema)
+
+const yearSchema = new mongoose.Schema({
+    year: { type: String, required: true, unique: true },
+});
+
+const Year = mongoose.model('Year', yearSchema);
+
+const classSchema = new mongoose.Schema({
+    className: { type: String, required: true, unique: true },
+});
+
+const ClassName = mongoose.model('ClassName', classSchema);
+
+const mediumSchema = new mongoose.Schema({
+    medium: { type: String, required: true, unique: true },
+});
+
+const Medium = mongoose.model('Medium', mediumSchema);
+
+const versionSchema = new mongoose.Schema({
+    version: { type: String, required: true, unique: true },
+});
+
+const Version = mongoose.model('Version', versionSchema);
+
 
 // Predefined login credentials
 const EMAIL = 'uploader@nctb.com';
@@ -91,6 +116,30 @@ app.post('/admin/login', async function (req, res) {
   res.status(200).json([...managers])
 })
 
+app.get('/books', async function (req, res) {
+    const books = await Document.find()
+    res.status(200).json([...books])
+  })
+
+  app.get('/year', async function (req, res) {
+    const years = await Year.find()
+    res.status(200).json([...years])
+  })
+
+  app.get('/class', async function (req, res) {
+    const classes = await ClassName.find()
+    res.status(200).json([...classes])
+  })
+
+  app.get('/medium', async function (req, res) {
+    const mediums = await Medium.find()
+    res.status(200).json([...mediums])
+  })
+
+  app.get('/version', async function (req, res) {
+    const version = await Version.find()
+    res.status(200).json([...version])
+  })
 
 app.post('/user/create', async (req, res) => {
     const { email, pass } = req.body;
@@ -103,7 +152,54 @@ app.post('/user/create', async (req, res) => {
     await manager.save();
     res.status(201).json({ success: true, message: "User created successfully" });
   });
+
+
+  app.post('/addyear', async (req, res) => {
+    const { year } = req.body;
+    const existingYear = await Year.findOne({ year })
+    if (existingYear) {
+      return res.status(400).json({ success: false, message: "year already created" });
+    }
+    const addedyear = new Year({ year });
+    await addedyear.save();
+    res.status(201).json({ success: true, message: "year added successfully" });
+  });
+
+
+  app.post('/addclass', async (req, res) => {
+    const { className } = req.body;
+    const existingClass = await ClassName.findOne({ className })
+    if (existingClass) {
+      return res.status(400).json({ success: false, message: "class already created" });
+    }
+    const addedClass = new ClassName({ className });
+    await addedClass.save();
+    res.status(201).json({ success: true, message: "class added successfully" });
+  });
+
+
+  app.post('/addmedium', async (req, res) => {
+    const { medium } = req.body;
+    const existingMedium = await Medium.findOne({ medium })
+    if (existingMedium) {
+      return res.status(400).json({ success: false, message: "Medium already created" });
+    }
+    const addedMedium = new Medium({ medium });
+    await addedMedium.save();
+    res.status(201).json({ success: true, message: "Medium added successfully" });
+  });
   
+
+  app.post('/addversion', async (req, res) => {
+    const { version } = req.body;
+    const existingVersion = await Version.findOne({ version })
+    if (existingVersion) {
+      return res.status(400).json({ success: false, message: "Version already created" });
+    }
+    const addedVersion = new Version({ version });
+    await addedVersion.save();
+    res.status(201).json({ success: true, message: "Version added successfully" });
+  });
   
   // delete branch manager
   
@@ -117,8 +213,8 @@ app.post('/user/create', async (req, res) => {
 // POST route to add a new document
 app.post('/documents', async (req, res) => {
     try {
-        const { grade, subject, medium, version, drivePdfUrl } = req.body;
-        const newDocument = new Document({ grade, medium, subject, version, drivePdfUrl });
+        const { className, subject, medium, version, drivePdfUrl } = req.body;
+        const newDocument = new Document({ className, medium, subject, version, drivePdfUrl });
         await newDocument.save();
         res.status(201).json({ success: true, message: 'Document added', data: newDocument });
     } catch (error) {
@@ -126,7 +222,18 @@ app.post('/documents', async (req, res) => {
     }
 });
 
-app.get('/documents', async (req, res) => {
+app.post('/create-book', async (req, res) => {
+    try {
+        const { className, bookName, medium, version } = req.body;
+        const newDocument = new Document({ className, medium, bookName, version });
+        await newDocument.save();
+        res.status(201).json({ success: true, message: 'Document added', data: newDocument });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error saving document', error });
+    }
+});
+
+app.get('/book', async (req, res) => {
     try {
         const { grade, medium, subject, version, drivePdfUrl } = req.query;
 
