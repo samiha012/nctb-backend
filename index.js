@@ -165,6 +165,34 @@ app.post('/user/create', async (req, res) => {
     res.status(201).json({ success: true, message: "year added successfully" });
   });
 
+  app.put('/updateyear/:id', async (req, res) => {
+    const { id } = req.params;
+    const { year } = req.body;
+    
+    try {
+        // Check if the year exists
+        const existingYear = await Year.findById(id);
+        if (!existingYear) {
+            return res.status(404).json({ success: false, message: "Year not found" });
+        }
+
+        // Check if the new year already exists
+        const yearWithSameValue = await Year.findOne({ year });
+        if (yearWithSameValue && yearWithSameValue._id.toString() !== id) {
+            return res.status(400).json({ success: false, message: "Year already exists" });
+        }
+
+        // Update year
+        existingYear.year = year;
+        await existingYear.save();
+        
+        res.status(200).json({ success: true, message: "Year updated successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
+
+
 
   app.post('/addclass', async (req, res) => {
     const { className } = req.body;
@@ -177,6 +205,34 @@ app.post('/user/create', async (req, res) => {
     res.status(201).json({ success: true, message: "class added successfully" });
   });
 
+  app.put('/updateclass/:id', async (req, res) => {
+    const { id } = req.params;
+    const { className } = req.body;
+    
+    try {
+        // Check if the class exists
+        const existingClass = await ClassName.findById(id);
+        if (!existingClass) {
+            return res.status(404).json({ success: false, message: "Class not found" });
+        }
+
+        // Check if the new class name already exists
+        const classWithSameName = await ClassName.findOne({ className });
+        if (classWithSameName && classWithSameName._id.toString() !== id) {
+            return res.status(400).json({ success: false, message: "Class name already exists" });
+        }
+
+        // Update class name
+        existingClass.className = className;
+        await existingClass.save();
+        
+        res.status(200).json({ success: true, message: "Class updated successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
+
+
 
   app.post('/addmedium', async (req, res) => {
     const { medium } = req.body;
@@ -188,6 +244,34 @@ app.post('/user/create', async (req, res) => {
     await addedMedium.save();
     res.status(201).json({ success: true, message: "Medium added successfully" });
   });
+
+  app.put('/updatemedium/:id', async (req, res) => {
+    const { id } = req.params;
+    const { medium } = req.body;
+    
+    try {
+        // Check if the medium exists
+        const existingMedium = await Medium.findById(id);
+        if (!existingMedium) {
+            return res.status(404).json({ success: false, message: "Medium not found" });
+        }
+
+        // Check if the new medium name already exists
+        const mediumWithSameName = await Medium.findOne({ medium });
+        if (mediumWithSameName && mediumWithSameName._id.toString() !== id) {
+            return res.status(400).json({ success: false, message: "Medium already exists" });
+        }
+
+        // Update medium
+        existingMedium.medium = medium;
+        await existingMedium.save();
+        
+        res.status(200).json({ success: true, message: "Medium updated successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
+
   
 
   app.post('/addversion', async (req, res) => {
@@ -200,6 +284,34 @@ app.post('/user/create', async (req, res) => {
     await addedVersion.save();
     res.status(201).json({ success: true, message: "Version added successfully" });
   });
+
+  app.put('/updateversion/:id', async (req, res) => {
+    const { id } = req.params;
+    const { version } = req.body;
+    
+    try {
+        // Check if the medium exists
+        const existingVersion = await Version.findById(id);
+        if (!existingVersion) {
+            return res.status(404).json({ success: false, message: "Version not found" });
+        }
+
+        // Check if the new medium name already exists
+        const versionWithSameName = await Version.findOne({ version });
+        if (versionWithSameName && versionWithSameName._id.toString() !== id) {
+            return res.status(400).json({ success: false, message: "Medium already exists" });
+        }
+
+        // Update medium
+        existingMedium.medium = medium;
+        await existingMedium.save();
+        
+        res.status(200).json({ success: true, message: "Medium updated successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
+
   
   // delete branch manager
   
